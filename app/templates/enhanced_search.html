@@ -38,11 +38,11 @@
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.search_query.label }}
-                {{ form.search_query(class="form-control", placeholder="Search in title, description, ingredients, or instructions") }}
+                {{ form.search_query(class="form-control", placeholder="Search Event") }}
             </div>
             <div class="form-group">
                 {{ form.tags.label }}
-                {{ form.tags(class="form-control", placeholder="Enter tags separated by commas (e.g., vegetarian, quick, dinner)") }}
+                {{ form.tags(class="form-control", placeholder="Enter tags separated by commas (e.g., bbq, CarneAsada, potluck, concert)") }}
             </div>
             <div class="form-group">
                 {{ form.submit(class="btn btn-primary") }}

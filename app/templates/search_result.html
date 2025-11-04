@@ -43,7 +43,7 @@
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.search_query.label(class="form-label") }}
-                {{ form.search_query(class="form-control", placeholder="Search in title, description, ingredients, or instructions") }}
+                {{ form.search_query(class="form-control", placeholder="Search Event") }}
             </div>
             <div class="form-group">
                 {{ form.submit(class="btn btn-primary", action="{{ url_for('search_events') }}", method="GET") }}

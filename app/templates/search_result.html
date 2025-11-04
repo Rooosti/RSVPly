@@ -46,22 +46,22 @@
                 {{ form.search_query(class="form-control", placeholder="Search in title, description, ingredients, or instructions") }}
             </div>
             <div class="form-group">
-                {{ form.submit(class="btn btn-primary", action="{{ url_for('search_recipes') }}", method="GET") }}
+                {{ form.submit(class="btn btn-primary", action="{{ url_for('search_events') }}", method="GET") }}
             </div>
         </form>
-        {% if recipes %}
+        {% if events %}
             <ul class="list-group mt-4" style="padding-left:0;">
-                {% for recipe in recipes %}
+                {% for event in events %}
                 <li class="list-group-item">
-                    <a href="{{ url_for('return_recipe', integer=recipe.id) }}">{{ recipe.title }}</a>
-                    <p class="mb-1">Description: {{ recipe.description }}</p>
-                    <p class="mb-1">Posted by: {{ recipe.user.username }}</p>
+                    <a href="{{ url_for('return_event', integer=event.id) }}">{{ event.title }}</a>
+                    <p class="mb-1">Description: {{ event.description }}</p>
+                    <p class="mb-1">Posted by: {{ event.user.username }}</p>
                 </li>
                 {% endfor %}
             </ul>
         {% else %}
             <div class="alert alert-info mt-4">
-                No recipes found matching your search.
+                No events found matching your search.
             </div>
         {% endif %}
         <a href="{{ url_for('enhanced_search') }}" class="btn btn-link mt-3">Enhanced Search</a>

@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, valid
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 from datetime import datetime
 
-class RecipeForm(FlaskForm): # form for creating recipe
+class EventForm(FlaskForm): # form for creating event
     title = StringField('Title', validators=[validators.DataRequired()])
     description = TextAreaField('Description', validators=[validators.DataRequired()]) 
     ingredients = TextAreaField('Ingredients', validators=[validators.DataRequired()])
@@ -37,7 +37,7 @@ class EditUserForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired()])
     submit =  SubmitField("Apply")
 
-class EditRecipeForm(FlaskForm): # form for creating recipe
+class EditEventForm(FlaskForm): # form for creating event
     title = StringField('Title', validators=[validators.DataRequired()])
     description = TextAreaField('Description', validators=[validators.DataRequired()]) 
     ingredients = TextAreaField('Ingredients', validators=[validators.DataRequired()])

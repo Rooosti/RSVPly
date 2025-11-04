@@ -26,14 +26,14 @@
         <div class="col-md-12 mb-3">
             <h5 class="mb-3">Your Favorites</h5>
                 <div class="scrollable-container">
-                    {% for recipe in current_user.favorites %}
-                        <h6><a href = "/recipe/{{recipe.id}}">{{recipe.title}}</a></h6>
+                    {% for event in current_user.favorites %}
+                        <h6><a href = "/event/{{event.id}}">{{event.title}}</a></h6>
                         <p class="text-muted">
-                            {{recipe.description}}
+                            {{event.description}}
                         </p>
                         {% else %}
                         <p>
-                            <h6>No Events Found.</h6>
+                            <h6>No events found.</h6>
                         </p>
                     {% endfor %}
                 </div>

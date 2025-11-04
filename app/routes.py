@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, request, render_template, flash, url
 from flask_sqlalchemy import SQLAlchemy # Added SQLAlchemy
 from app.forms import *
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
-from app.models import Recipe, User, Comment, Rating # importing from models.py
+from app.models import Event, User, Comment, Rating # importing from models.py
 from app import db
 from datetime import datetime # added datetime
 # from <X> import <Y>
@@ -39,18 +39,18 @@ deactivate
 def home_page():
     return redirect(url_for("login"))
 
-@myapp_obj.route("/recipes") # http://127.0.0.1:5000/recipes
-def view_all_recipes():
-    recipes = Recipe.query.all() # get all recipes
-    return render_template("hello.html", recipes=recipes)
+@myapp_obj.route("/events") # http://127.0.0.1:5000/events
+def view_all_events():
+    events = Event.query.all() # get all events
+    return render_template("hello.html", events=events)
 
-@myapp_obj.route("/recipe/new", methods=['GET', 'POST']) # http://127.0.0.1:5000/recipe/new
+@myapp_obj.route("/event/new", methods=['GET', 'POST']) # http://127.0.0.1:5000/event/new
 @login_required
-def create_recipe():
-    form = RecipeForm()
+def create_event():
+    form = eventForm()
     if form.validate_on_submit():
-        #create recipe
-        new_recipe = Recipe(
+        #create event
+        new_event = event(
             title=form.title.data,
             description=form.description.data,
             ingredients=form.ingredients.data,
@@ -59,17 +59,17 @@ def create_recipe():
             date=datetime.now(),
             user_id=current_user.id
         )
-        db.session.add(new_recipe) #adding to database
+        db.session.add(new_event) #adding to database
         db.session.commit()
         return redirect("/")
-    return render_template("new.html", form=form) #recipe form
+    return render_template("new.html", form=form) #event form
 
-@myapp_obj.route("/recipe/<int:integer>", methods=['GET', 'POST']) # http://127.0.0.1:5000/recipe/<enter number here>
+@myapp_obj.route("/event/<int:integer>", methods=['GET', 'POST']) # http://127.0.0.1:5000/event/<enter number here>
 @login_required
-def return_recipe(integer):
-    recipe = Recipe.query.get(integer) # get recipe number
-    if recipe is None:
-        print("Recipe not found") #prints to terminal
+def return_event(integer):
+    event = Event.query.get(integer) # get event number
+    if event is None:
+        print("event not found") #prints to terminal
         return ""
     
     comment_form = CommentForm() # create comment form
@@ -77,35 +77,35 @@ def return_recipe(integer):
 
     #comment and rating form
     if comment_form.validate_on_submit() and comment_form.submit.data:
-            new_comment = Comment(comment=comment_form.comment.data, user_id=current_user.id, recipe_id=recipe.id)
+            new_comment = Comment(comment=comment_form.comment.data, user_id=current_user.id, event_id=event.id)
             db.session.add(new_comment)
             db.session.commit()
             return redirect(request.path)
     
     if rating_form.validate_on_submit() and rating_form.submit.data:
-        existing_rating = Rating.query.filter_by(user_id=current_user.id, recipe_id=recipe.id).first()
+        existing_rating = Rating.query.filter_by(user_id=current_user.id, event_id=event.id).first()
         if existing_rating:
             existing_rating.score = rating_form.score.data
         else:
-            new_rating = Rating(score=rating_form.score.data, user_id=current_user.id, recipe_id=recipe.id)
+            new_rating = Rating(score=rating_form.score.data, user_id=current_user.id, event_id=event.id)
             db.session.add(new_rating)
         
         db.session.commit()
         return redirect(request.path)
 
-    comments = recipe.comments
-    return render_template("return_rec.html", recipe=recipe, comment_form=comment_form, rating_form=rating_form, comments=comments)
+    comments = event.comments
+    return render_template("return_rec.html", event=event, comment_form=comment_form, rating_form=rating_form, comments=comments)
 
-@myapp_obj.route("/recipe/<int:integer>/delete") # http://127.0.0.1:5000/recipe/<enter number here>/delete
-def delete_recipe(integer):
-    del_rec = Recipe.query.get(integer) # get recipe number
+@myapp_obj.route("/event/<int:integer>/delete") # http://127.0.0.1:5000/event/<enter number here>/delete
+def delete_event(integer):
+    del_rec = Event.query.get(integer) # get event number
     if current_user == del_rec.user:
         db.session.delete(del_rec) #delete
         db.session.commit()
-        flash("Recipe successfully deleted", "success")
+        flash("event successfully deleted", "success")
         return redirect(url_for("login"))
     else:
-        flash("You must own a recipe to delete it.", "error")
+        flash("You must own a event to delete it.", "error")
         return redirect(url_for("login"))
 
 @myapp_obj.route("/registration", methods=['GET', 'POST'])
@@ -149,22 +149,22 @@ def login():
     return render_template("login.html", form=form)
 
 #Favorites
-@myapp_obj.route("/toggle_favorite/<int:recipe_id>", methods=["POST"])
+@myapp_obj.route("/toggle_favorite/<int:event_id>", methods=["POST"])
 @login_required
-def toggle_favorite(recipe_id):
-    recipe = Recipe.query.get(recipe_id)
-    if recipe is None:
-        flash("Recipe not found", 'error')
+def toggle_favorite(event_id):
+    event = Event.query.get(event_id)
+    if event is None:
+        flash("event not found", 'error')
         return redirect(url_for("main"))
-    if recipe not in current_user.favorites:
-        current_user.favorites.append(recipe)
+    if event not in current_user.favorites:
+        current_user.favorites.append(event)
         db.session.commit()
-        flash("Recipe added to favorites", 'success')
+        flash("event added to favorites", 'success')
     else:
-        if recipe in current_user.favorites:
-            current_user.favorites.remove(recipe)
+        if event in current_user.favorites:
+            current_user.favorites.remove(event)
             db.session.commit()
-            flash("Recipe removed from favorites", 'success')
+            flash("event removed from favorites", 'success')
     return redirect(url_for("view_favorites"))
 
 # View Favorites
@@ -198,61 +198,61 @@ def edit_profile():
         db.session.commit()
     return render_template("edit_user.html", user=current_user, form=form)
 
-@myapp_obj.route('/recipe/<int:integer>/edit', methods=["GET", "POST"])
+@myapp_obj.route('/event/<int:integer>/edit', methods=["GET", "POST"])
 @login_required
-def edit_recipe(integer):
-    form = EditRecipeForm()
-    recipe = Recipe.query.get(integer) # get recipe number
-    if recipe == None:
-        flash("Recipe does not exist.", "error")
+def edit_event(integer):
+    form = EditeventForm()
+    event = Event.query.get(integer) # get event number
+    if event == None:
+        flash("Event does not exist.", "error")
         return redirect(url_for("login"))
     else:
-        if recipe.user != current_user:
-            flash("You cannot edit recipes you don't own.", "error")
+        if event.user != current_user:
+            flash("You cannot edit events you don't own.", "error")
             return redirect(url_for("login"))
         if form.validate_on_submit():
-            #edit recipe
+            #edit event
             if form.title.data:
-                recipe.title = form.title.data
+                event.title = form.title.data
             if form.description.data:
-                recipe.description = form.description.data
+                event.description = form.description.data
             if form.ingredients.data:
-                recipe.ingredients = form.ingredients.data
+                event.ingredients = form.ingredients.data
             if form.instructions.data:
-                recipe.instructions = form.instructions.data
+                event.instructions = form.instructions.data
             if form.tags.data:
-                recipe.tags = form.tags.data
+                event.tags = form.tags.data
             db.session.commit()
-            flash("Recipe successfully changed.", "success")
-            return redirect(f"/recipe/{integer}")
-        return render_template("edit_recipe.html", recipe=recipe, form=form)
+            flash("event successfully changed.", "success")
+            return redirect(f"/event/{integer}")
+        return render_template("edit_event.html", event=event, form=form)
 
 @myapp_obj.route('/search', methods =['GET', 'POST'])
-def search_recipes():
+def search_events():
     query = request.args.get('query')
     form = SearchForm()
     if not query:
         if form.validate_on_submit():
             search_query = form.search_query.data
             
-            recipes = Recipe.query.filter(
+            events = Event.query.filter(
                 db.or_(
-                    Recipe.title.ilike(f'%{search_query}%'),
-                    Recipe.description.ilike(f'%{search_query}%'),
-                    Recipe.ingredients.ilike(f'%{search_query}%'),
-                    Recipe.instructions.ilike(f'%{search_query}%'),
+                    Event.title.ilike(f'%{search_query}%'),
+                    Event.description.ilike(f'%{search_query}%'),
+                    Event.ingredients.ilike(f'%{search_query}%'),
+                    Event.instructions.ilike(f'%{search_query}%'),
                 )
             ).all()
     else:
-        recipes = Recipe.query.filter(
+        events = Event.query.filter(
                 db.or_(
-                    Recipe.title.ilike(f'%{query}%'),
-                    Recipe.description.ilike(f'%{query}%'),
-                    Recipe.ingredients.ilike(f'%{query}%'),
-                    Recipe.instructions.ilike(f'%{query}%'),
+                    Event.title.ilike(f'%{query}%'),
+                    Event.description.ilike(f'%{query}%'),
+                    Event.ingredients.ilike(f'%{query}%'),
+                    Event.instructions.ilike(f'%{query}%'),
                 )
             ).all()
-        return render_template('search_result.html', recipes = recipes, form = form)
+        return render_template('search_result.html', events = events, form = form)
     return render_template('search.html', form = form)
 
 @myapp_obj.route('/enhanced-search', methods=['GET', 'POST'])
@@ -263,16 +263,16 @@ def enhanced_search():
         tags_input = form.tags.data
 
         # Start with base query
-        query = Recipe.query
+        query = Event.query
 
         # Apply text search if provided
         if search_query:
             query = query.filter(
                 db.or_(
-                    Recipe.title.ilike(f'%{search_query}%'),
-                    Recipe.description.ilike(f'%{search_query}%'),
-                    Recipe.ingredients.ilike(f'%{search_query}%'),
-                    Recipe.instructions.ilike(f'%{search_query}%')
+                    Event.title.ilike(f'%{search_query}%'),
+                    Event.description.ilike(f'%{search_query}%'),
+                    Event.ingredients.ilike(f'%{search_query}%'),
+                    Event.instructions.ilike(f'%{search_query}%')
                 )
             )
 
@@ -280,9 +280,9 @@ def enhanced_search():
         if tags_input:
             tag_names = [tag.strip() for tag in tags_input.split(',')]
             for tag_name in tag_names:
-                query = query.filter(Recipe.tags.ilike(f'%{tag_name}%'))
+                query = query.filter(event.tags.ilike(f'%{tag_name}%'))
 
-        recipes = query.all()
-        return render_template('enhanced_search_result.html', recipes=recipes, form=form)
+        events = query.all()
+        return render_template('enhanced_search_result.html', events=events, form=form)
     
     return render_template('enhanced_search.html', form=form)

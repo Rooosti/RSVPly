@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 
-{% block title %}Create Event{% endblock %}
+{% block title %}Make Event{% endblock %}
 
 {% block head %}
 <style>
-    html, body {
+    html, body{
         background-color: var(--bs-tertiary-bg);
     }
 
@@ -21,67 +21,45 @@
 
 {% block content %}
 <div class="col-md-12 mb-3">
-    <h5 class="mb-3">Create Event</h5>
-    <div class="scrollable-container">
-        <form action="" method="POST">
-            {{ form.hidden_tag() }}
-
-            <!-- Event type dropdown -->
-            <p>
-                <div class="form-group">
-                    <label for="eventType" class="form-label">Event Type</label>
-                    <select id="eventType" name="eventType" class="form-control">
-                        <option value="private">Create Private Event</option>
-                        <option value="public">Create Public Event</option>
-                    </select>
+            <h5 class="mb-3">Input Details</h5>
+                <div class="scrollable-container">
+                    <form action="" method="POST">
+                    {{ form.hidden_tag() }}
+                            <p>
+                                <div class="form-group">
+                                    {{ form.title.label(class="form-label") }}
+                                    {{ form.title(class="form-control", id="titleFormInput", placeholder="Title") }}
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                    {{ form.description.label(class="form-label") }}
+                                    {{ form.description(class="form-control", id="detailsFormInput", placeholder="Event description", style="height: 200px") }}
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                    {{ form.ingredients.label(class="form-label") }}
+                                    {{ form.ingredients(class="form-control", id="detailsFormInput", placeholder="Event ingredients", style="height: 200px") }}
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                    {{ form.instructions.label(class="form-label") }}<br>
+                                    {{ form.instructions(class="form-control", id="instructionsFormInput", placeholder="Event instructions", style="height: 300px") }}
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                    {{ form.tags.label(class="form-label") }}
+                                    {{ form.tags(class="form-control", id="tagsFormInput", placeholder="Enter tags separated by commas (e.g., vegetarian, quick, dinner)") }}
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </p>
                 </div>
-            </p>
-
-            <!-- Event title -->
-            <p>
-                <div class="form-group">
-                    {{ form.title.label(class="form-label") }}
-                    {{ form.title(class="form-control", id="titleFormInput", placeholder="Event Title") }}
-                </div>
-            </p>
-
-            <!-- Date & time -->
-            <p>
-                <div class="form-group">
-                    <label for="date" class="form-label">Date</label>
-                    <input type="date" id="date" name="date" class="form-control">
-                </div>
-            </p>
-            <p>
-                <div class="form-group">
-                    <label for="time" class="form-label">Event Time</label>
-                    <input type="time" id="time" name="time" class="form-control">
-                </div>
-            </p>
-
-            <!-- Location -->
-            <p>
-                <div class="form-group">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" id="location" name="location" class="form-control" placeholder="Event Address or link">
-                </div>
-            </p>
-
-            <!-- Description -->
-            <p>
-                <div class="form-group">
-                    {{ form.description.label(class="form-label") }}
-                    {{ form.description(class="form-control", id="detailsFormInput", placeholder="Event description", style="height: 200px") }}
-                </div>
-            </p>
-
-            <!-- Submit button -->
-            <p>
-                <div class="form-group">
-                    {{ form.submit(class="btn btn-primary") }}
-                </div>
-            </p>
-        </form>
-    </div>
-</div>
+        </div>
 {% endblock %}

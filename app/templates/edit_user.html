@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block head %}
+<style>
+    html, body{
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .scrollable-container {
+        background-color: var(--bs-body-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        height: 500px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Hello, {{ user.username }}<h1>
+    <hr class="my-4">
+    <h2>Change User Credentials</h2>
+    <div class="form-container">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <p>
+                <div class="form-group">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control", id="usernameFormInput", placeholder="Username", size=32) }}
+                </div>
+            </p>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

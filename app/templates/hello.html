@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}My Favorites{% endblock %}
+
+{% block head %}
+<style>
+    html, body{
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .scrollable-container {
+        background-color: var(--bs-body-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        height: 80vh;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+
+        <div class="col-md-12 mb-3">
+            <h5 class="mb-3">All Recipes</h5>
+                <div class="scrollable-container">
+                    {% for recipe in recipes %}
+                        <h6><a href = "/recipe/{{recipe.id}}">{{recipe.title}}</a></h6>
+                        <p class="text-muted">
+                            {{recipe.description}}
+                        </p>
+                        {% else %}
+                        <p>
+                            <h6>No recipes found.</h6>
+                        </p>
+                    {% endfor %}
+                </div>
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% if user %}
+{{user.username}}'s Profile
+{% else %}
+User not Found
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<style>
+    html, body{
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .scrollable-container {
+        background-color: var(--bs-body-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        height: 350px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Profile Card -->
+  <div class="d-flex justify-content-center mb-4">
+    <div class="card text-center" style="width: 18rem; border: none; outline: none; background-color: var(--bs-tertiary-bg);">
+      <img src="/static/images/default_pfp.jpg" class="card-img-top rounded-circle mx-auto mt-3" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
+      <div class="card-body">
+                {% if user %}
+                <h5 class="card-title">{{user.username}}</h5>
+                {% else %}
+                <h5 class="card-title">User not found.</h5>
+                {% endif %}
+                <!-- User logout or edit buttons (if logged in) -->
+                {% if current_user.is_authenticated and current_user == user %}
+                    <a href = "/logout">Logout</a>
+                    <a href = "/edit_profile">Edit Profile</a>
+                {% endif %}
+      </div>
+    </div>
+  </div>
+
+    {% if user %}
+  <!-- Scrollable Columns (Recipes and Comments) -->
+  <div class="row">
+
+        <div class="col-md-8 mb-3">
+            <h5 class="mb-3">Events Attending</h5>
+                <div class="scrollable-container">
+                    {% for recipe in user.recipes %}
+                        <h6><a href = "/recipe/{{recipe.id}}">{{recipe.title}}</a></h6>
+                        <p class="text-muted">
+                            {{recipe.description}}
+                        </p>
+                        {% else %}
+                        <p>
+                            <h6>No Events found.</h6>
+                        </p>
+                    {% endfor %}
+                </div>
+        </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+</body>
+</html>
+
+

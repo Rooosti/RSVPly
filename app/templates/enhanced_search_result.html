@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block head %}
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+    }
+    .results-container {
+        background-color: var(--bs-dark);
+        border-radius: 12px;
+        width: 40vw;
+        min-width: 350px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .recipe-card {
+        background-color: var(--bs-body-bg);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .badge {
+        margin-right: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="results-container">
+        <h1>Search Results</h1>
+        {% if recipes %}
+            {% for recipe in recipes %}
+                <div class="recipe-card">
+                    <h5>{{ recipe.title }}</h5>
+                    <p>{{ recipe.description[:100] }}...</p>
+                    <div>
+                        <strong>Tags:</strong>
+                        {% if recipe.tags %}
+                            {% for tag in recipe.tags.split(',') %}
+                                <span class="badge badge-primary">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No tags</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('return_recipe', integer=recipe.id) }}" class="btn btn-primary mt-2">View Recipe</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info mt-4">
+                No recipes found matching your search criteria.
+            </div>
+        {% endif %}
+        <div class="mt-4">
+            <a href="{{ url_for('enhanced_search') }}" class="btn btn-secondary">Enhanced Search</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

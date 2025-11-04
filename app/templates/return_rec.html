@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block head %}
+<style>
+    html, body{
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .scrollable-container {
+        background-color: var(--bs-body-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        height: 650px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Recipe Content -->
+    <div class="col-md-8 mb-3">
+        <div class="scrollable-container">
+            <h3>{{recipe.title}}</h3>
+            <hr class="my-4">
+                <h4>Description</h4>
+                    <p class="text-muted">
+                        {{recipe.description}}
+                    </p>
+                <hr class="my-4">
+                <h4>Ingredients</h4>
+                    <p class="text-muted">
+                        {{recipe.ingredients}}
+                    </p>
+                <hr class="my-4">
+                <h4>Instructions</h4>
+                    <p class="text-muted">
+                        {{recipe.instructions}}
+                    </p>
+                <hr class="my-4">
+            <h5 class="text-muted">Posted By <a href="/view/{{ recipe.user.username }}">{{ recipe.user.username }}</a></h5>
+            <form action="{{ url_for('toggle_favorite', recipe_id=recipe.id) }}" method="POST">
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  {% if recipe in current_user.favorites %}
+                    <button type="submit" class="btn btn-primary">Unfavorite</button>
+                  {% else %}
+                    <button type="submit" class="btn btn-primary">Favorite</button>
+                  {% endif %}
+            </form>
+            {% if current_user == recipe.user %}
+            <h6 class="text-muted"><a href="/recipe/{{ recipe.id }}/edit">Edit</a></h6>
+            <h6 class="text-muted"><a href="/recipe/{{ recipe.id }}/delete">Delete</a></h6>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ratings and rate system. -->
+    <div class="col-md-4 mb-3">
+        <div class="scrollable-container">
+        <h6>Ratings</h6>
+        <form action="" method="POST">
+            {{ rating_form.hidden_tag() }}
+            <p>
+                <div class="form-group">
+                    {{ rating_form.score.label(class="form-label") }}
+                    {{ rating_form.score(class="form-control", id="titleRatingInput", min=1, max=5) }}
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
+                    {{ rating_form.submit(class="btn btn-primary") }}
+                </div>
+            </p>
+        </form>
+            <hr class="my-4">
+            <div class="scrollable-container" style="box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0)">
+                <ul>
+                    {% for r in recipe.ratings %}
+                        <li>{{ r.user.username }} rated it {{ r.score }}/5</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+<div>
+
+<div class="col-md-12 mb-3">
+        <div class="scrollable-container">
+        <form action="" method="POST">
+            {{ comment_form.hidden_tag() }}
+            <p>
+                <div class="form-group">
+                    {{ comment_form.comment.label(class="form-label") }}
+                    {{ comment_form.comment(class="form-control", id="commentInput") }}
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
+                    {{ comment_form.submit(class="btn btn-primary") }}
+                </div>
+            </p>
+        </form>
+        <hr class="my-4">
+        <h4>Comments</h4>
+        <div class="scrollable-container" style="box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0)">
+                {% for c in recipe.comments %}
+                    <h6>{{ c.user.username }}:</h6>
+                    <p>{{ c.comment }}</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

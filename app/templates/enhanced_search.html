@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Enhanced Search{% endblock %}
+
+{% block head %}
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+    }
+    .form-container {
+        background-color: var(--bs-dark);
+        border-radius: 12px;
+        width: 40vw;
+        min-width: 350px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>Enhanced Recipe Search</h1>
+        <p class="text-muted">Search recipes by text and tags</p>
+        <form method="POST" action="{{ url_for('enhanced_search') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.search_query.label }}
+                {{ form.search_query(class="form-control", placeholder="Search in title, description, ingredients, or instructions") }}
+            </div>
+            <div class="form-group">
+                {{ form.tags.label }}
+                {{ form.tags(class="form-control", placeholder="Enter tags separated by commas (e.g., vegetarian, quick, dinner)") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

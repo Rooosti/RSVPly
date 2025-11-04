@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block head %}
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+    }
+    .results-container {
+        background-color: var(--bs-dark);
+        border-radius: 12px;
+        width: 40vw;
+        min-width: 350px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .list-group-item {
+        background-color: var(--bs-body-bg);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        list-style: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="results-container">
+        <h1>Search Results</h1>
+        <hr class="my-4">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.search_query.label(class="form-label") }}
+                {{ form.search_query(class="form-control", placeholder="Search in title, description, ingredients, or instructions") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary", action="{{ url_for('search_recipes') }}", method="GET") }}
+            </div>
+        </form>
+        {% if recipes %}
+            <ul class="list-group mt-4" style="padding-left:0;">
+                {% for recipe in recipes %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('return_recipe', integer=recipe.id) }}">{{ recipe.title }}</a>
+                    <p class="mb-1">Description: {{ recipe.description }}</p>
+                    <p class="mb-1">Posted by: {{ recipe.user.username }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info mt-4">
+                No recipes found matching your search.
+            </div>
+        {% endif %}
+        <a href="{{ url_for('enhanced_search') }}" class="btn btn-link mt-3">Enhanced Search</a>
+    </div>
+</div>
+{% endblock %}

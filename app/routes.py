@@ -47,7 +47,7 @@ def view_all_events():
 @myapp_obj.route("/event/new", methods=['GET', 'POST']) # http://127.0.0.1:5000/event/new
 @login_required
 def create_event():
-    form = eventForm()
+    form = EventForm()
     if form.validate_on_submit():
         #create event
         new_event = event(

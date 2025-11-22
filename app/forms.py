@@ -1,16 +1,48 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Email, Length, NumberRange
+from wtforms import *
+from wtforms.validators import *
 from datetime import datetime
 
-class EventForm(FlaskForm): # form for creating event
-    title = StringField('Title', validators=[validators.DataRequired()])
-    description = TextAreaField('Description', validators=[validators.DataRequired()]) 
-    ingredients = TextAreaField('Ingredients', validators=[validators.DataRequired()])
-    instructions = TextAreaField('Instructions', validators=[validators.DataRequired()])
-    tags = StringField('Tags (comma-separated)', validators=[validators.Optional()])
-    submit =  SubmitField("Create Event")
-    remember_me = BooleanField("Remember Me")
+class EventForm(FlaskForm):
+    title = StringField(
+        "Title",
+        validators=[DataRequired(), Length(max=255)]
+    )
+    description = TextAreaField(
+        "Description",
+        validators=[Optional()]
+    )
+    # HTML5 datetime-local → naive datetime in WTForms; attach timezone in the view.
+    starts_at = DateTimeLocalField(
+        "Starts at",
+        format="%Y-%m-%dT%H:%M",
+        validators=[DataRequired()],
+    )
+    ends_at = DateTimeLocalField(
+        "Ends at",
+        format="%Y-%m-%dT%H:%M",
+        validators=[DataRequired()],
+    )
+    capacity = IntegerField(
+        "Capacity (leave blank for unlimited)",
+        validators=[Optional(), NumberRange(min=1, message="Capacity must be ≥ 1")],
+    )
+    is_public = BooleanField("Public?", default=True)
+
+    address_line1 = StringField("Address line 1", validators=[Optional(), Length(max=255)])
+    address_line2 = StringField("Address line 2", validators=[Optional(), Length(max=255)])
+
+    categories = SelectMultipleField(
+        "Categories",
+        query_factory=lambda: Category.query.order_by(Category.name).all(),
+        get_label="name",
+        allow_blank=True
+    )
+
+    # --- Cross-field validation ---
+    def validate_ends_at(self, field):
+        if self.starts_at.data and field.data and field.data <= self.starts_at.data:
+            raise ValidationError("End time must be after start time.")
 
 class RegistrationForm(FlaskForm): # form for user registration
     username = StringField('Username', validators=[validators.DataRequired()])

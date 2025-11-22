@@ -4,67 +4,53 @@ from flask import Flask, request, redirect, request, render_template, flash, url
 from flask_sqlalchemy import SQLAlchemy # Added SQLAlchemy
 from app.forms import *
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
-from app.models import Event, User, Comment, Rating # importing from models.py
+from app.models import Event, User, EventComment, Rsvp # importing from models.py
 from app import db
 from datetime import datetime # added datetime
-# from <X> import <Y>
-
-'''
-Setup instructions:
-
-Clone repo
-Navigate to folder
-
-run: 
-python3 -m venv venv
-source venv/bin/activate
-
-install necessary libraries using pip3
-
-run in terminal:
-flask shell
-from app import db
-db.create.all()
-exit()
-
-python3 run.py
-
-run in terminal to stop virtual environment:
-
-deactivate
-
-'''
 
 @myapp_obj.route("/")
 def home_page():
     return redirect(url_for("login"))
 
-@myapp_obj.route("/events") # http://127.0.0.1:5000/events
+# http://127.0.0.1:5000/events
+@myapp_obj.route("/events")
 def view_all_events():
     events = Event.query.all() # get all events
     return render_template("hello.html", events=events)
 
-@myapp_obj.route("/event/new", methods=['GET', 'POST']) # http://127.0.0.1:5000/event/new
+# http://127.0.0.1:500/event/new
+@myapp_obj.route("/event/new", methods=["GET", "POST"])
 @login_required
 def create_event():
     form = EventForm()
     if form.validate_on_submit():
-        #create event
-        new_event = event(
+        # Create a new Event object
+        new_event = Event(
             title=form.title.data,
             description=form.description.data,
-            ingredients=form.ingredients.data,
-            instructions=form.instructions.data,
-            tags=form.tags.data,
-            date=datetime.now(),
-            user_id=current_user.id
+            starts_at=form.starts_at.data,
+            ends_at=form.ends_at.data,
+            capacity=form.capacity.data,
+            is_public=form.is_public.data,
+            address_line1=form.address_line1.data,
+            address_line2=form.address_line2.data,
+            organizer_id=current_user.id,
         )
-        db.session.add(new_event) #adding to database
-        db.session.commit()
-        return redirect("/")
-    return render_template("new.html", form=form) #event form
 
-@myapp_obj.route("/event/<int:integer>", methods=['GET', 'POST']) # http://127.0.0.1:5000/event/<enter number here>
+        # If categories are part of the form (e.g. SelectMultipleField)
+        if hasattr(form, "categories") and form.categories.data:
+            new_event.categories = form.categories.data
+
+        db.session.add(new_event)
+        db.session.commit()
+
+        flash("Event created successfully!", "success")
+        return redirect(url_for("event_detail", event_id=new_event.id))
+
+    return render_template("new.html", form=form)
+
+# http://127.0.0.1:5000/event/<enter number here>
+@myapp_obj.route("/event/<int:integer>", methods=['GET', 'POST'])
 @login_required
 def return_event(integer):
     event = Event.query.get(integer) # get event number

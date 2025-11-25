@@ -45,7 +45,7 @@ def create_event():
         db.session.commit()
 
         flash("Event created successfully!", "success")
-        return redirect(url_for("event_detail", event_id=new_event.id))
+        return redirect(url_for("return_event", integer=new_event.id))
 
     return render_template("new.html", form=form)
 
@@ -101,15 +101,16 @@ def register():
         username = form.username.data #1
         email = form.email.data
         password = form.password.data #1
-        users = User.query.all()
-        if email in users:
+        #users = User.query.all()
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
             flash("Email is taken.", 'error')
             return redirect(url_for("register"))
-        else:
-            u = User(username=username, email=email, password=password) #1
-            db.session.add(u)#1
-            db.session.commit() #1
-            print(f"User registered: {username}")
+        u = User(username=username, email=email)
+        u.set_password(password)
+        db.session.add(u)#1
+        db.session.commit() #1
+        print(f"User registered: {username}")
         return redirect("/")
     return render_template("registration.html", form=form)
 
@@ -123,7 +124,7 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.query.filter_by(username=username).first()
-        if user and  user.password == password:
+        if user and user.check_password(password):
             login_user(user)
             flash('Logged in successfully', 'success')
             next_page = request.args.get('next')

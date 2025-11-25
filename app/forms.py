@@ -2,44 +2,31 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import *
 from datetime import datetime
+from wtforms_sqlalchemy.fields import QuerySelectMultipleField
+from app.models import Category
 
 class EventForm(FlaskForm):
     title = StringField(
         "Title",
         validators=[DataRequired(), Length(max=255)]
     )
-    description = TextAreaField(
-        "Description",
-        validators=[Optional()]
-    )
-    # HTML5 datetime-local → naive datetime in WTForms; attach timezone in the view.
-    starts_at = DateTimeLocalField(
-        "Starts at",
-        format="%Y-%m-%dT%H:%M",
-        validators=[DataRequired()],
-    )
-    ends_at = DateTimeLocalField(
-        "Ends at",
-        format="%Y-%m-%dT%H:%M",
-        validators=[DataRequired()],
-    )
-    capacity = IntegerField(
-        "Capacity (leave blank for unlimited)",
-        validators=[Optional(), NumberRange(min=1, message="Capacity must be ≥ 1")],
-    )
-    is_public = BooleanField("Public?", default=True)
+    description = TextAreaField("Description", validators=[Optional()])
 
-    address_line1 = StringField("Address line 1", validators=[Optional(), Length(max=255)])
+    starts_at = DateTimeLocalField("Starts at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    ends_at = DateTimeLocalField("Ends at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    capacity = IntegerField("Capacity",validators=[Optional(), NumberRange(min=1)])
+    is_public = BooleanField("Public?", default=True)
+    address_line1 = StringField("Address line 1", validators=[DataRequired(), Length(max=255)])
     address_line2 = StringField("Address line 2", validators=[Optional(), Length(max=255)])
 
-    categories = SelectMultipleField(
+    categories = QuerySelectMultipleField(
         "Categories",
         query_factory=lambda: Category.query.order_by(Category.name).all(),
-        get_label="name",
-        allow_blank=True
+        get_label="name"
     )
 
-    # --- Cross-field validation ---
+    submit = SubmitField("Create Event")
+
     def validate_ends_at(self, field):
         if self.starts_at.data and field.data and field.data <= self.starts_at.data:
             raise ValidationError("End time must be after start time.")

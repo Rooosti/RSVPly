@@ -22,60 +22,103 @@
 {% block content %}
 <div class="row">
 
-    <!-- Event Content -->
     <div class="col-md-8 mb-3">
         <div class="scrollable-container">
-            <h3>{{event.title}}</h3>
+            <h3>{{ event.title }}</h3>
+
             <hr class="my-4">
-                <h4>Description</h4>
-                    <p class="text-muted">
-                        {{event.description}}
-                    </p>
-                <hr class="my-4">
-                <h4>Ingredients</h4>
-                    <p class="text-muted">
-                        {{event.ingredients}}
-                    </p>
-                <hr class="my-4">
-                <h4>Instructions</h4>
-                    <p class="text-muted">
-                        {{event.instructions}}
-                    </p>
-                <hr class="my-4">
-            <h5 class="text-muted">Posted By <a href="/view/{{ event.user.username }}">{{ event.user.username }}</a></h5>
+            <h4>Description</h4>
+            <p class="text-muted">
+                {{ event.description }}
+            </p>
+
+            <hr class="my-4">
+            <h4>Starts at</h4>
+            <p class="text-muted">
+                {{ event.starts_at }}
+            </p>
+
+            <hr class="my-4">
+            <h4>Ends at</h4>
+            <p class="text-muted">
+                {{ event.ends_at }}
+            </p>
+
+            <hr class="my-4">
+            <h4>Capacity</h4>
+            <p class="text-muted">
+                {% if event.capacity %}
+                    {{ event.capacity }} attendees
+                {% else %}
+                    Unlimited
+                {% endif %}
+            </p>
+
+            <hr class="my-4">
+            <h4>Address line 1</h4>
+            <p class="text-muted">
+                {{ event.address_line1 }}
+            </p>
+
+            <hr class="my-4">
+            <h4>Address line 2</h4>
+            <p class="text-muted">
+                {% if event.address_line2 %}
+                    {{ event.address_line2 }}
+                {% else %}
+                    —
+                {% endif %}
+            </p>
+
+            <hr class="my-4">
+            <h4>Visibility</h4>
+            <p class="text-muted">
+                {% if event.is_public %}
+                    Public event
+                {% else %}
+                    Private event
+                {% endif %}
+            </p>
+
+            <hr class="my-4">
+            <h5 class="text-muted">
+                Posted By <a href="/view/{{ event.organizer.username }}">{{ event.organizer.username }}</a>
+            </h5>
+
             <form action="{{ url_for('toggle_favorite', event_id=event.id) }}" method="POST">
-                  <input type="hidden" name="next" value="{{ request.path }}">
-                  {% if event in current_user.favorites %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                {% if event in current_user.favorites %}
                     <button type="submit" class="btn btn-primary">Unfavorite</button>
-                  {% else %}
+                {% else %}
                     <button type="submit" class="btn btn-primary">Favorite</button>
-                  {% endif %}
+                {% endif %}
             </form>
-            {% if current_user == event.user %}
-            <h6 class="text-muted"><a href="/event/{{ event.id }}/edit">Edit</a></h6>
-            <h6 class="text-muted"><a href="/event/{{ event.id }}/delete">Delete</a></h6>
+
+            {% if current_user == event.organizer %}
+                <h6 class="text-muted"><a href="/event/{{ event.id }}/edit">Edit</a></h6>
+                <h6 class="text-muted"><a href="/event/{{ event.id }}/delete">Delete</a></h6>
             {% endif %}
         </div>
     </div>
 
-    <!-- Ratings and rate system. -->
     <div class="col-md-4 mb-3">
         <div class="scrollable-container">
-        <h6>Ratings</h6>
-        <form action="" method="POST">
-            {{ rating_form.hidden_tag() }}
-            <p>
-                <div class="form-group">
-                    {{ rating_form.score.label(class="form-label") }}
-                    {{ rating_form.score(class="form-control", id="titleRatingInput", min=1, max=5) }}
-                </div>
-            </p>
-            <p>
-                <div class="form-group">
-                    {{ rating_form.submit(class="btn btn-primary") }}
-                </div>
-            </p>
-        </form>
+            <h6>Ratings</h6>
+            <form action="" method="POST">
+                {{ rating_form.hidden_tag() }}
+                <p>
+                    <div class="form-group">
+                        {{ rating_form.score.label(class="form-label") }}
+                        {{ rating_form.score(class="form-control", id="titleRatingInput", min=1, max=5) }}
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        {{ rating_form.submit(class="btn btn-primary") }}
+                    </div>
+                </p>
+            </form>
+
             <hr class="my-4">
             <div class="scrollable-container" style="box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0)">
                 <ul>
@@ -86,33 +129,35 @@
             </div>
         </div>
     </div>
-<div>
 
-<div class="col-md-12 mb-3">
+    <div class="col-md-12 mb-3">
         <div class="scrollable-container">
-        <form action="" method="POST">
-            {{ comment_form.hidden_tag() }}
-            <p>
-                <div class="form-group">
-                    {{ comment_form.comment.label(class="form-label") }}
-                    {{ comment_form.comment(class="form-control", id="commentInput") }}
-                </div>
-            </p>
-            <p>
-                <div class="form-group">
-                    {{ comment_form.submit(class="btn btn-primary") }}
-                </div>
-            </p>
-        </form>
-        <hr class="my-4">
-        <h4>Comments</h4>
-        <div class="scrollable-container" style="box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0)">
+            <form action="" method="POST">
+                {{ comment_form.hidden_tag() }}
+                <p>
+                    <div class="form-group">
+                        {{ comment_form.comment.label(class="form-label") }}
+                        {{ comment_form.comment(class="form-control", id="commentInput") }}
+                    </div>
+                </p>
+                <p>
+                    <div class="form-group">
+                        {{ comment_form.submit(class="btn btn-primary") }}
+                    </div>
+                </p>
+            </form>
+
+            <hr class="my-4">
+            <h4>Comments</h4>
+
+            <div class="scrollable-container" style="box-shadow: 0 0px 0px rgba(0, 0, 0, 0.0)">
                 {% for c in event.comments %}
                     <h6>{{ c.user.username }}:</h6>
-                    <p>{{ c.comment }}</p>
+                    <p>{{ c.body }}</p>
                 {% endfor %}
-            </ul>
+            </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

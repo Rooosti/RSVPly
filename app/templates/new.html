@@ -26,7 +26,6 @@
         <form action="" method="POST">
             {{ form.hidden_tag() }}
 
-            <!-- Event type dropdown -->
             <p>
                 <div class="form-group">
                     <label for="eventType" class="form-label">Event Type</label>
@@ -37,7 +36,6 @@
                 </div>
             </p>
 
-            <!-- Event title -->
             <p>
                 <div class="form-group">
                     {{ form.title.label(class="form-label") }}
@@ -45,29 +43,41 @@
                 </div>
             </p>
 
-            <!-- Date & time -->
             <p>
                 <div class="form-group">
-                    <label for="date" class="form-label">Date</label>
-                    <input type="date" id="date" name="date" class="form-control">
-                </div>
-            </p>
-            <p>
-                <div class="form-group">
-                    <label for="time" class="form-label">Event Time</label>
-                    <input type="time" id="time" name="time" class="form-control">
+                    {{ form.starts_at.label(class="form-label") }}
+                    {{ form.starts_at(class="form-control", id="startsAtInput") }}
                 </div>
             </p>
 
-            <!-- Location -->
             <p>
                 <div class="form-group">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" id="location" name="location" class="form-control" placeholder="Event Address or link">
+                    {{ form.ends_at.label(class="form-label") }}
+                    {{ form.ends_at(class="form-control", id="endsAtInput") }}
                 </div>
             </p>
 
-            <!-- Description -->
+            <p>
+                <div class="form-group">
+                    {{ form.capacity.label(class="form-label") }}
+                    {{ form.capacity(class="form-control", id="capacityInput", placeholder="Leave blank for unlimited") }}
+                </div>
+            </p>
+
+            <p>
+                <div class="form-group">
+                    {{ form.address_line1.label(class="form-label") }}
+                    {{ form.address_line1(class="form-control", id="addressLine1Input", placeholder="Address Line 1") }}
+                </div>
+            </p>
+
+            <p>
+                <div class="form-group">
+                    {{ form.address_line2.label(class="form-label") }}
+                    {{ form.address_line2(class="form-control", id="addressLine2Input", placeholder="Address Line 2 (optional)") }}
+                </div>
+            </p>
+
             <p>
                 <div class="form-group">
                     {{ form.description.label(class="form-label") }}
@@ -75,7 +85,6 @@
                 </div>
             </p>
 
-            <!-- Submit button -->
             <p>
                 <div class="form-group">
                     {{ form.submit(class="btn btn-primary") }}

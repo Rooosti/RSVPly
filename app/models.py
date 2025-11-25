@@ -4,6 +4,8 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from . import login_manager
 from app import db
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import (
@@ -56,7 +58,7 @@ event_categories = db.Table(
 
 # ---------- Models ----------
 # User(id, email, username, full_name, avatar_url)
-class User(db.Model, TimestampMixin):
+class User(db.Model, UserMixin, TimestampMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -64,6 +66,14 @@ class User(db.Model, TimestampMixin):
     username: Mapped[str | None] = mapped_column(String(50), unique=True)
     full_name: Mapped[str | None] = mapped_column(String(255))
     avatar_url: Mapped[str | None] = mapped_column(Text)
+
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     # Relationships
     organized_events: Mapped[list["Event"]] = relationship(

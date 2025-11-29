@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import *
 from datetime import datetime
-from wtforms_sqlalchemy.fields import QuerySelectMultipleField
+from wtforms.fields import SelectMultipleField
 from app.models import Category
 
 class EventForm(FlaskForm):
@@ -19,7 +19,7 @@ class EventForm(FlaskForm):
     address_line1 = StringField("Address line 1", validators=[DataRequired(), Length(max=255)])
     address_line2 = StringField("Address line 2", validators=[Optional(), Length(max=255)])
 
-    categories = QuerySelectMultipleField(
+    categories = SelectMultipleField(
         "Categories",
         query_factory=lambda: Category.query.order_by(Category.name).all(),
         get_label="name"

@@ -63,7 +63,7 @@ def return_event(integer):
 
     #comment and rating form
     if comment_form.validate_on_submit() and comment_form.submit.data:
-            new_comment = Comment(comment=comment_form.comment.data, user_id=current_user.id, event_id=event.id)
+            new_comment = EventComment(event_id=event.id, user_id=current_user.id, comment=comment_form.comment.data)
             db.session.add(new_comment)
             db.session.commit()
             return redirect(request.path)
@@ -188,31 +188,42 @@ def edit_profile():
 @myapp_obj.route('/event/<int:integer>/edit', methods=["GET", "POST"])
 @login_required
 def edit_event(integer):
-    form = EditeventForm()
+    form = EditEventForm()
     event = Event.query.get(integer) # get event number
     if event == None:
         flash("Event does not exist.", "error")
         return redirect(url_for("login"))
     else:
-        if event.user != current_user:
+        if event.organizer != current_user:
             flash("You cannot edit events you don't own.", "error")
             return redirect(url_for("login"))
+    if request.method == "POST":
         if form.validate_on_submit():
             #edit event
             if form.title.data:
                 event.title = form.title.data
             if form.description.data:
                 event.description = form.description.data
-            if form.ingredients.data:
-                event.ingredients = form.ingredients.data
-            if form.instructions.data:
-                event.instructions = form.instructions.data
-            if form.tags.data:
-                event.tags = form.tags.data
+            if form.starts_at.data:
+                event.starts_at = form.starts_at.data
+            if form.ends_at.data:
+                event.ends_at = form.ends_at.data
+            if form.capacity.data:
+                event.capacity = form.capacity.data
+            event.is_public = form.is_public.data
+            if form.address_line1.data:
+                event.address_line1 = form.address_line1.data
+            if form.address_line2.data:
+                event.address_line2 = form.address_line2.data
             db.session.commit()
             flash("event successfully changed.", "success")
             return redirect(f"/event/{integer}")
-        return render_template("edit_event.html", event=event, form=form)
+    else:
+        # Pre-populate form with existing event data
+        form = EditEventForm(obj=event)
+
+    # Pass both form and event to template
+    return render_template("edit_event.html", form=form, event=event)
 
 @myapp_obj.route('/search', methods =['GET', 'POST'])
 def search_events():

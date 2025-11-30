@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Make Event{% endblock %}
+{% block title %}Edit Event{% endblock %}
 
 {% block head %}
 <style>
@@ -13,34 +13,36 @@
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        height: 80vh;
+        height: 700px;
         overflow-y: auto;
     }
 </style>
 {% endblock %}
 
 {% block content %}
+{% if event %}
 <div class="col-md-12 mb-3">
-    <h5 class="mb-3">Create Event</h5>
+    <h5 class="mb-3">Edit Event</h5>
     <div class="scrollable-container">
         <form action="" method="POST">
             {{ form.hidden_tag() }}
+
             <p>
                 <div class="form-group">
                     <label for="eventType" class="form-label">Event Type</label>
                     <select id="eventType" name="eventType" class="form-control">
-                        <option value="private">Create Private Event</option>
-                        <option value="public">Create Public Event</option>
+                        <option value="private">Private Event</option>
+                        <option value="public">Public Event</option>
                     </select>
                 </div>
             </p>
+
             <p>
                 <div class="form-group">
                     {{ form.title.label(class="form-label") }}
                     {{ form.title(class="form-control", id="titleFormInput", placeholder="Event Title") }}
                 </div>
             </p>
-
             <p>
                 <div class="form-group">
                     {{ form.starts_at.label(class="form-label") }}
@@ -85,4 +87,7 @@
         </form>
     </div>
 </div>
+{% else %}
+    <h5 class="mb-3">Invalid Event ID</h5>
+{% endif %}
 {% endblock %}

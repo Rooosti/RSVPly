@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import *
 from datetime import datetime
-from wtforms.fields import SelectMultipleField
+from wtforms_sqlalchemy.fields import QuerySelectMultipleField
 from app.models import Category
 
 class EventForm(FlaskForm):
@@ -19,7 +19,7 @@ class EventForm(FlaskForm):
     address_line1 = StringField("Address line 1", validators=[DataRequired(), Length(max=255)])
     address_line2 = StringField("Address line 2", validators=[Optional(), Length(max=255)])
 
-    categories = SelectMultipleField(
+    categories = QuerySelectMultipleField(
         "Categories",
         query_factory=lambda: Category.query.order_by(Category.name).all(),
         get_label="name"
@@ -56,13 +56,31 @@ class EditUserForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired()])
     submit =  SubmitField("Apply")
 
-class EditEventForm(FlaskForm): # form for creating event
-    title = StringField('Title', validators=[validators.DataRequired()])
-    description = TextAreaField('Description', validators=[validators.DataRequired()]) 
-    ingredients = TextAreaField('Ingredients', validators=[validators.DataRequired()])
-    instructions = TextAreaField('Instructions', validators=[validators.DataRequired()])
-    tags = StringField('Tags (comma-separated)', validators=[validators.Optional()])
-    submit =  SubmitField("Apply Changes")
+class EditEventForm(FlaskForm):
+    title = StringField(
+        "Title",
+        validators=[DataRequired(), Length(max=255)]
+    )
+    description = TextAreaField("Description", validators=[Optional()])
+
+    starts_at = DateTimeLocalField("Starts at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    ends_at = DateTimeLocalField("Ends at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    capacity = IntegerField("Capacity",validators=[Optional(), NumberRange(min=1)])
+    is_public = BooleanField("Public?", default=True)
+    address_line1 = StringField("Address line 1", validators=[DataRequired(), Length(max=255)])
+    address_line2 = StringField("Address line 2", validators=[Optional(), Length(max=255)])
+
+    categories = QuerySelectMultipleField(
+        "Categories",
+        query_factory=lambda: Category.query.order_by(Category.name).all(),
+        get_label="name"
+    )
+
+    submit = SubmitField("Apply Changes")
+
+    def validate_ends_at(self, field):
+        if self.starts_at.data and field.data and field.data <= self.starts_at.data:
+            raise ValidationError("End time must be after start time.")
 
 class SearchForm(FlaskForm):
     search_query= StringField('Search', validators=[validators.Optional()])

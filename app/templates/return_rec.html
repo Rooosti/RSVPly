@@ -95,12 +95,12 @@
                 Posted By <a href="/view/{{ event.organizer.username }}">{{ event.organizer.username }}</a>
             </h5>
 
-            <form action="{{ url_for('toggle_favorite', event_id=event.id) }}" method="POST">
+            <form action="{{ url_for('rsvp', event_id=event.id) }}" method="POST">
                 <input type="hidden" name="next" value="{{ request.path }}">
-                {% if event in current_user.favorites %}
-                    <button type="submit" class="btn btn-primary">Unfavorite</button>
+                {% if rsvp %}
+                    <button type="submit" class="btn btn-primary">Remove RSVP</button>
                 {% else %}
-                    <button type="submit" class="btn btn-primary">Favorite</button>
+                    <button type="submit" class="btn btn-primary">RSVP</button>
                 {% endif %}
             </form>
 

@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, request, render_template, flash, url
 from flask_sqlalchemy import SQLAlchemy # Added SQLAlchemy
 from app.forms import *
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
-from app.models import Event, User, EventComment, Rsvp # importing from models.py
+from app.models import Event, User, EventComment, Rsvp, RsvpStatus # importing from models.py
 from app import db
 from datetime import datetime # added datetime
 
@@ -59,6 +59,13 @@ def return_event(integer):
         print("event not found") #prints to terminal
         return ""
     
+    # Find existing RSVP of user (if any)
+    if current_user:
+        rsvp = Rsvp.query.filter_by(
+            user_id=current_user.id,
+            event_id=event.id
+        ).first()
+
     comment_form = CommentForm() # create comment form
     rating_form = RatingForm() # create rating form
 
@@ -81,7 +88,7 @@ def return_event(integer):
         return redirect(request.path)
 
     comments = event.comments
-    return render_template("return_rec.html", event=event, comment_form=comment_form, rating_form=rating_form, comments=comments)
+    return render_template("return_rec.html", event=event, comment_form=comment_form, rating_form=rating_form, comments=comments, rsvp=rsvp)
 
 @myapp_obj.route("/event/<int:integer>/delete") # http://127.0.0.1:5000/event/<enter number here>/delete
 def delete_event(integer):
@@ -136,30 +143,52 @@ def login():
             flash('Invalid username or password.', 'error')
     return render_template("login.html", form=form)
 
-#Favorites
-@myapp_obj.route("/toggle_favorite/<int:event_id>", methods=["POST"])
+@myapp_obj.route("/toggle_rsvp/<int:event_id>", methods=["POST"])
 @login_required
-def toggle_favorite(event_id):
+def rsvp(event_id):
     event = Event.query.get(event_id)
     if event is None:
-        flash("event not found", 'error')
+        flash("Event not found", "error")
         return redirect(url_for("main"))
-    if event not in current_user.favorites:
-        current_user.favorites.append(event)
-        db.session.commit()
-        flash("event added to favorites", 'success')
-    else:
-        if event in current_user.favorites:
-            current_user.favorites.remove(event)
-            db.session.commit()
-            flash("event removed from favorites", 'success')
-    return redirect(url_for("view_favorites"))
 
-# View Favorites
-@myapp_obj.route("/favorites")
+    # Find existing RSVP (if any)
+    rsvp = Rsvp.query.filter_by(
+        user_id=current_user.id,
+        event_id=event.id
+    ).first()
+
+    if rsvp is None:
+        # Create a new RSVP
+        new_rsvp = Rsvp(
+            user=current_user,
+            event=event,
+            status=RsvpStatus.going, #kind of forgot we have enums for the rsvps; just set to default "going" for RSVPs to reduce project scope
+            guests_count=0
+        )
+        db.session.add(new_rsvp)
+        db.session.commit()
+        flash("Event added to RSVPs", "success")
+    elif rsvp.status == RsvpStatus.going:
+            flash("RSVP Removed", "success")
+            db.session.delete(rsvp)
+            db.session.commit()
+
+    return redirect(url_for("return_event", integer=event.id))
+
+
+# View RSVPs
+@myapp_obj.route("/rsvps")
 @login_required
-def view_favorites():
-    return render_template("favorites.html", favorites=current_user.favorites)
+def view_rsvps():
+    rsvps = Rsvp.query.filter_by(
+        user_id=current_user.id,
+        status=RsvpStatus.going
+    ).all()
+
+    events = [r.event for r in rsvps]
+
+    return render_template("rsvps.html", events=events)
+
 
 # Log out
 @myapp_obj.route('/logout')

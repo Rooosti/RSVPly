@@ -79,6 +79,12 @@
             </p>
             <p>
                 <div class="form-group">
+                    {{ form.wishlist.label(class="form-label") }}
+                    {{ form.wishlist(class="form-control", id="wishlistInput", placeholder="Optional: Enter Wishlist Items guests may bring...", style="height: 150px") }}
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
                     {{ form.submit(class="btn btn-primary") }}
                 </div>
             </p>

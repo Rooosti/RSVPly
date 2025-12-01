@@ -113,6 +113,7 @@ class Event(db.Model, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
+    wishlist: Mapped[str | None] = mapped_column(Text)
     starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     capacity: Mapped[int | None] = mapped_column(Integer)  # NULL = unlimited

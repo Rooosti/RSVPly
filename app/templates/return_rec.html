@@ -33,6 +33,16 @@
             </p>
 
             <hr class="my-4">
+            <h4>Wishlist</h4>
+            <p class="text-muted">
+                {% if event.wishlist %}
+                {{ event.wishlist }}
+                {% else %}
+                    —
+                {% endif %}
+</p>
+
+            <hr class="my-4">
             <h4>Starts at</h4>
             <p class="text-muted">
                 {{ event.starts_at }}

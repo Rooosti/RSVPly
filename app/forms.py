@@ -11,6 +11,7 @@ class EventForm(FlaskForm):
         validators=[DataRequired(), Length(max=255)]
     )
     description = TextAreaField("Description", validators=[Optional()])
+    wishlist = TextAreaField("Wishlist", validators=[Optional()])
 
     starts_at = DateTimeLocalField("Starts at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
     ends_at = DateTimeLocalField("Ends at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
@@ -62,6 +63,7 @@ class EditEventForm(FlaskForm):
         validators=[DataRequired(), Length(max=255)]
     )
     description = TextAreaField("Description", validators=[Optional()])
+    wishlist = TextAreaField("Wishlist", validators=[Optional()])
 
     starts_at = DateTimeLocalField("Starts at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
     ends_at = DateTimeLocalField("Ends at", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])

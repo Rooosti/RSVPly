@@ -28,6 +28,7 @@ def create_event():
         new_event = Event(
             title=form.title.data,
             description=form.description.data,
+            wishlist=form.wishlist.data,
             starts_at=form.starts_at.data,
             ends_at=form.ends_at.data,
             capacity=form.capacity.data,
@@ -204,6 +205,8 @@ def edit_event(integer):
                 event.title = form.title.data
             if form.description.data:
                 event.description = form.description.data
+            if form.wishlist.data:
+                event.wishlist = form.wishlist.data
             if form.starts_at.data:
                 event.starts_at = form.starts_at.data
             if form.ends_at.data:

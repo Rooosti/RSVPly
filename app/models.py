@@ -83,6 +83,9 @@ class User(db.Model, UserMixin, TimestampMixin):
     comments: Mapped[list["EventComment"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    ratings: Mapped[list["Rating"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email!r}>"
@@ -134,6 +137,9 @@ class Event(db.Model, TimestampMixin):
         back_populates="event", cascade="all, delete-orphan"
     )
     comments: Mapped[list["EventComment"]] = relationship(
+        back_populates="event", cascade="all, delete-orphan"
+    )
+    ratings: Mapped[list["Rating"]] = relationship(
         back_populates="event", cascade="all, delete-orphan"
     )
 
@@ -202,6 +208,28 @@ class EventComment(db.Model):
 
     def __repr__(self) -> str:
         return f"<EventComment id={self.id} event_id={self.event_id} user_id={self.user_id}>"
+
+# Rating(id, event_id, user_id, score)
+class Rating(db.Model):
+    __tablename__ = "ratings"
+    __table_args__ = (
+        UniqueConstraint("user_id", "event_id", name="uq_ratings_user_event"),
+        CheckConstraint("score >= 1 AND score <= 5", name="chk_rating_score"),
+        Index("idx_ratings_event", "event_id"),
+        Index("idx_ratings_user", "user_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    event_id: Mapped[int] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    score: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    event: Mapped[Event] = relationship(back_populates="ratings")
+    user: Mapped[User] = relationship(back_populates="ratings")
+
+    def __repr__(self) -> str:
+        return f"<Rating id={self.id} event_id={self.event_id} user_id={self.user_id} score={self.score}>"
 
 
 @login_manager.user_loader

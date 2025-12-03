@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, request, render_template, flash, url
 from flask_sqlalchemy import SQLAlchemy # Added SQLAlchemy
 from app.forms import *
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
-from app.models import Event, User, EventComment, Rsvp, RsvpStatus # importing from models.py
+from app.models import Event, User, EventComment, Rsvp, RsvpStatus, Rating # importing from models.py
 from app import db
 from datetime import datetime # added datetime
 

@@ -106,6 +106,7 @@ def delete_event(integer):
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        full_name = form.full_name.data
         username = form.username.data #1
         email = form.email.data
         password = form.password.data #1
@@ -114,7 +115,7 @@ def register():
         if existing_user:
             flash("Email is taken.", 'error')
             return redirect(url_for("register"))
-        u = User(username=username, email=email)
+        u = User(username=username, email=email, full_name=full_name)
         u.set_password(password)
         db.session.add(u)#1
         db.session.commit() #1

@@ -33,6 +33,7 @@ class EventForm(FlaskForm):
             raise ValidationError("End time must be after start time.")
 
 class RegistrationForm(FlaskForm): # form for user registration
+    full_name = StringField('Full Name', validators=[validators.DataRequired(), Length(max=255)])
     username = StringField('Username', validators=[validators.DataRequired()])
     email = StringField('Email', validators=[validators.DataRequired(), validators.Email()])
     password = PasswordField('Password', validators=[validators.Length(min=4, max=35)])

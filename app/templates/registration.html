@@ -49,6 +49,12 @@
             {{ form.hidden_tag() }}
             <p>
                 <div class="form-group">
+                    {{ form.full_name.label(class="form-label") }}
+                    {{ form.full_name(class="form-control", id="usernameFormInput", placeholder="Full Name", size=32) }}
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
                     {{ form.username.label(class="form-label") }}
                     {{ form.username(class="form-control", id="usernameFormInput", placeholder="Username", size=32) }}
                 </div>

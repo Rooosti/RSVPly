@@ -91,6 +91,20 @@
             </p>
 
             <hr class="my-4">
+            <h4>People who RSVP’d</h4>
+            <p class="text-muted">
+                {% if event.rsvps %}
+                <ul>
+                    {% for r in event.rsvps %}
+                    <li>{{ r.user.full_name or r.user.username }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                No one has RSVP’d yet.
+                {% endif %}
+            </p>
+
+            <hr class="my-4">
             <h5 class="text-muted">
                 Posted By <a href="/view/{{ event.organizer.username }}">{{ event.organizer.username }}</a>
             </h5>

@@ -71,7 +71,7 @@ def return_event(integer):
 
     #comment and rating form
     if comment_form.validate_on_submit() and comment_form.submit.data:
-            new_comment = EventComment(event_id=event.id, user_id=current_user.id, comment=comment_form.comment.data)
+            new_comment = EventComment(event_id=event.id, user_id=current_user.id, body=comment_form.comment.data)
             db.session.add(new_comment)
             db.session.commit()
             return redirect(request.path)

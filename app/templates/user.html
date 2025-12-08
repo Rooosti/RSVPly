@@ -42,6 +42,17 @@ User not Found
                     <a href = "/logout">Logout</a>
                     <a href = "/edit_profile">Edit Profile</a>
                 {% endif %}
+                {% if current_user.is_authenticated and current_user.is_admin and current_user != user %}
+                <form method="POST" action="{{ url_for('ban_user', user_id=user.id) }}">
+
+                    {% if user.is_banned %}
+                    <button class="btn btn-success btn-sm mt-2" type="submit">Unban User</button>
+                    {% else %}
+                    <button class="btn btn-danger btn-sm mt-2" type="submit">Ban User</button>
+                    {% endif %}
+
+                </form>
+                {% endif %}
       </div>
     </div>
   </div>
@@ -53,7 +64,7 @@ User not Found
         <div class="col-md-8 mb-3">
             <h5 class="mb-3">Events</h5>
                 <div class="scrollable-container">
-                    {% for event in user.events %}
+                    {% for event in user.organized_events %}
                         <h6><a href = "/event/{{event.id}}">{{event.title}}</a></h6>
                         <p class="text-muted">
                             {{event.description}}
@@ -76,7 +87,7 @@ User not Found
                         <h6><a href = "/event/{{comment.event_id}}">Go to event<a></h6>
                         {% else %}
                         <p>
-                            <h6>No events found.</h6>
+                            <h6>No comments found.</h6>
                         </p>
                     {% endfor %}
                 </div>

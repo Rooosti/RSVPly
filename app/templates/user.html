@@ -82,7 +82,7 @@ User not Found
                 <div class="scrollable-container">
                     {% for comment in user.comments %}
                         <p class="text-muted">
-                            {{comment.comment}}
+                            {{comment.body}}
                         </p>
                         <h6><a href = "/event/{{comment.event_id}}">Go to event<a></h6>
                         {% else %}

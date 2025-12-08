@@ -118,7 +118,7 @@
                 {% endif %}
             </form>
 
-            {% if current_user == event.organizer %}
+            {% if current_user == event.organizer or current_user.is_admin %}
                 <h6 class="text-muted"><a href="/event/{{ event.id }}/edit">Edit</a></h6>
                 <h6 class="text-muted"><a href="/event/{{ event.id }}/delete">Delete</a></h6>
             {% endif %}

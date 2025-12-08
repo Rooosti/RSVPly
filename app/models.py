@@ -69,6 +69,9 @@ class User(db.Model, UserMixin, TimestampMixin):
 
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
+    is_admin: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), nullable=False)
+    is_banned: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), nullable=False)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

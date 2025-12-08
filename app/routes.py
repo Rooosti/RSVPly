@@ -93,7 +93,7 @@ def return_event(integer):
 @myapp_obj.route("/event/<int:integer>/delete") # http://127.0.0.1:5000/event/<enter number here>/delete
 def delete_event(integer):
     del_rec = Event.query.get(integer) # get event number
-    if current_user == del_rec.user:
+    if current_user == del_rec.organizer or current_user.is_admin:
         db.session.delete(del_rec) #delete
         db.session.commit()
         flash("event successfully deleted", "success")
@@ -134,6 +134,11 @@ def login():
         password = form.password.data
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+
+            if user.is_banned:
+                flash("Your account has been banned. Please contact an admin.", "error")
+                return redirect(url_for("login"))
+            
             login_user(user)
             flash('Logged in successfully', 'success')
             next_page = request.args.get('next')
@@ -283,3 +288,26 @@ def search_events():
         return render_template('search_result.html', events=events, form=form, query=query)
 
     return render_template('search.html', form=form)
+
+@myapp_obj.route('/admin/ban_user/<int:user_id>', methods=['POST'])
+@login_required
+def ban_user(user_id):
+    if not current_user.is_admin:
+        flash("You are not authorized to perform this action.", "error")
+        return redirect(url_for("home_page"))
+
+    user = User.query.get_or_404(user_id)
+
+    if user.is_admin:
+        flash("You cannot ban another admin.", "error")
+        return redirect(url_for("view_profile", username=user.username))
+
+    if user.is_banned:
+        user.is_banned = False
+        flash(f"{user.username} has been unbanned.", "success")
+    else:
+        user.is_banned = True
+        flash(f"{user.username} has been banned.", "success")
+
+    db.session.commit()
+    return redirect(url_for("view_profile", username=user.username))

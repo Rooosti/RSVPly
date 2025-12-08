@@ -88,8 +88,3 @@ class EditEventForm(FlaskForm):
 class SearchForm(FlaskForm):
     search_query= StringField('Search', validators=[validators.Optional()])
     submit = SubmitField('Search')
-
-class EnhancedSearchForm(FlaskForm):
-    search_query = StringField('Search', validators=[validators.Optional()])
-    tags = StringField('Tags (comma-separated)', validators=[validators.Optional()])
-    submit = SubmitField('Enhanced Search')

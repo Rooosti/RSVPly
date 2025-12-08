@@ -88,7 +88,7 @@ def return_event(integer):
         return redirect(request.path)
 
     comments = event.comments
-    return render_template("return_rec.html", event=event, comment_form=comment_form, rating_form=rating_form, comments=comments, rsvp=rsvp)
+    return render_template("return_ev.html", event=event, comment_form=comment_form, rating_form=rating_form, comments=comments, rsvp=rsvp)
 
 @myapp_obj.route("/event/<int:integer>/delete") # http://127.0.0.1:5000/event/<enter number here>/delete
 def delete_event(integer):
@@ -258,62 +258,28 @@ def edit_event(integer):
     # Pass both form and event to template
     return render_template("edit_event.html", form=form, event=event)
 
-@myapp_obj.route('/search', methods =['GET', 'POST'])
+@myapp_obj.route('/search', methods=['GET', 'POST'])
 def search_events():
-    query = request.args.get('query')
     form = SearchForm()
-    if not query:
-        if form.validate_on_submit():
-            search_query = form.search_query.data
-            
-            events = Event.query.filter(
-                db.or_(
-                    Event.title.ilike(f'%{search_query}%'),
-                    Event.description.ilike(f'%{search_query}%'),
-                    Event.ingredients.ilike(f'%{search_query}%'),
-                    Event.instructions.ilike(f'%{search_query}%'),
-                )
-            ).all()
-    else:
+
+    query = request.args.get('query')
+
+    if request.method == 'POST' and form.validate_on_submit():
+        query = form.search_query.data
+
+    events = []
+
+    if query:
         events = Event.query.filter(
-                db.or_(
-                    Event.title.ilike(f'%{query}%'),
-                    Event.description.ilike(f'%{query}%'),
-                    Event.ingredients.ilike(f'%{query}%'),
-                    Event.instructions.ilike(f'%{query}%'),
-                )
-            ).all()
-        return render_template('search_result.html', events = events, form = form)
-    return render_template('search.html', form = form)
-
-@myapp_obj.route('/enhanced-search', methods=['GET', 'POST'])
-def enhanced_search():
-    form = EnhancedSearchForm()
-    if form.validate_on_submit():
-        search_query = form.search_query.data
-        tags_input = form.tags.data
-
-        # Start with base query
-        query = Event.query
-
-        # Apply text search if provided
-        if search_query:
-            query = query.filter(
-                db.or_(
-                    Event.title.ilike(f'%{search_query}%'),
-                    Event.description.ilike(f'%{search_query}%'),
-                    Event.ingredients.ilike(f'%{search_query}%'),
-                    Event.instructions.ilike(f'%{search_query}%')
-                )
+            db.or_(
+                Event.title.ilike(f'%{query}%'),
+                Event.description.ilike(f'%{query}%'),
+                Event.wishlist.ilike(f'%{query}%'),
+                Event.address_line1.ilike(f'%{query}%'),
+                Event.address_line2.ilike(f'%{query}%'),
             )
+        ).all()
 
-        # Apply tag filtering if provided
-        if tags_input:
-            tag_names = [tag.strip() for tag in tags_input.split(',')]
-            for tag_name in tag_names:
-                query = query.filter(event.tags.ilike(f'%{tag_name}%'))
+        return render_template('search_result.html', events=events, form=form, query=query)
 
-        events = query.all()
-        return render_template('enhanced_search_result.html', events=events, form=form)
-    
-    return render_template('enhanced_search.html', form=form)
+    return render_template('search.html', form=form)

@@ -37,7 +37,7 @@
 {% block content %}
 <div class="container">
     <div class="results-container">
-        <h1>Search Results</h1>
+        <h1 style="color: white;">Search Results</h1>
         <hr class="my-4">
         <form method="POST">
             {{ form.hidden_tag() }}
@@ -55,7 +55,7 @@
                 <li class="list-group-item">
                     <a href="{{ url_for('return_event', integer=event.id) }}">{{ event.title }}</a>
                     <p class="mb-1">Description: {{ event.description }}</p>
-                    <p class="mb-1">Posted by: {{ event.user.username }}</p>
+                    <p class="mb-1">Posted by: {{ event.organizer.username }}</p>
                 </li>
                 {% endfor %}
             </ul>
@@ -64,7 +64,6 @@
                 No events found matching your search.
             </div>
         {% endif %}
-        <a href="{{ url_for('enhanced_search') }}" class="btn btn-link mt-3">Enhanced Search</a>
     </div>
 </div>
 {% endblock %}

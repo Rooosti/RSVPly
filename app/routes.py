@@ -18,10 +18,17 @@ from app.models import Event, User, EventComment, Rsvp, RsvpStatus, Rating # imp
 from app import db
 from datetime import datetime # added datetime
 
-@myapp_obj.before_first_request
+admin_initialized = False
+
+@myapp_obj.before_request
 def default_admin():
+    global admin_initialized
+    if admin_initialized:
+        return
+
     existing_admin = User.query.filter_by(is_admin=True).first()
     if existing_admin:
+        admin_initialized = True
         return
 
     admin_user = User.query.filter_by(username="ADMIN").first()
@@ -37,6 +44,7 @@ def default_admin():
 
     db.session.add(admin_user)
     db.session.commit()
+    admin_initialized = True
     print("Default ADMIN user created (username=ADMIN, password=12345)")
 
 @myapp_obj.route("/")

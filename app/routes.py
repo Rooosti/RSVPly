@@ -8,6 +8,37 @@ from app.models import Event, User, EventComment, Rsvp, RsvpStatus, Rating # imp
 from app import db
 from datetime import datetime # added datetime
 
+from ctypes import resize
+from app import myapp_obj
+from flask import Flask, request, redirect, request, render_template, flash, url_for
+from flask_sqlalchemy import SQLAlchemy # Added SQLAlchemy
+from app.forms import *
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
+from app.models import Event, User, EventComment, Rsvp, RsvpStatus, Rating # importing from models.py
+from app import db
+from datetime import datetime # added datetime
+
+@myapp_obj.before_first_request
+def default_admin():
+    existing_admin = User.query.filter_by(is_admin=True).first()
+    if existing_admin:
+        return
+
+    admin_user = User.query.filter_by(username="ADMIN").first()
+    if not admin_user:
+        admin_user = User(
+            username="ADMIN",
+            email="ADMIN@gmail.com",
+            full_name="ADMIN",
+        )
+
+    admin_user.set_password("12345")
+    admin_user.is_admin = True
+
+    db.session.add(admin_user)
+    db.session.commit()
+    print("Default ADMIN user created (username=ADMIN, password=12345)")
+
 @myapp_obj.route("/")
 def home_page():
     return redirect(url_for("login"))

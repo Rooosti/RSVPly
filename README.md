@@ -23,6 +23,11 @@ after, install necessary libraries using pip3:
 pip3 install -r requirements.txt
 ```
 
+Run run.py using following command afterwards
+```
+python3 run.py
+```
+
 # Remember to stop VENV after running:
 To stop the python virtual environment, run in the terminal:
 ```
@@ -30,7 +35,7 @@ deactivate
 ```
 
 # Link to Presentation:
-[Link]()
+[Link](https://youtu.be/0T98cg4zBV0)
 
 
 </p>
